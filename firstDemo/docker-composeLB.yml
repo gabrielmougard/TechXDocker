@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+
+  node:
+    build:
+      context: .
+      dockerfile: node.dockerfile
+    expose:
+      - "3000"
+    networks:
+      - nodeapp-network
+    depends_on: 
+      - mongodb
+  lbapp:
+    image: dockercloud/haproxy
+    links:
+      - app
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8000:80"
+      
+  mongodb:
+    image: mongo
+    networks:
+      - nodeapp-network
+
+networks:
+  nodeapp-network:
+    driver: bridge
